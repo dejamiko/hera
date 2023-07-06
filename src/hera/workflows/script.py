@@ -10,6 +10,7 @@ import textwrap
 from abc import abstractmethod
 from functools import wraps
 from typing import (
+    Annotated,
     Any,
     Callable,
     Dict,
@@ -48,6 +49,12 @@ from hera.workflows.parameter import MISSING, Parameter
 from hera.workflows.steps import Step
 from hera.workflows.task import Task
 
+try:
+    from inspect import get_annotations
+except ImportError:
+    from hera.workflows._inspect import get_annotations
+
+from typing_extensions import get_args
 
 class ScriptConstructor(BaseMixin):
     """A ScriptConstructor is responsible for generating the source code for a Script given a python callable.
@@ -230,16 +237,31 @@ class Script(
 def _get_parameters_from_callable(source: Callable) -> Optional[List[Parameter]]:
     # If there are any kwargs arguments associated with the function signature,
     # we store these as we can set them as default values for argo arguments
-    source_signature: Dict[str, Optional[object]] = {}
+    
+    # source_signature: Dict[str, Optional[object]] = {}
+
+    parameters = []
+    # print(get_annotations(source))
+    
     for p in inspect.signature(source).parameters.values():
         if p.default != inspect.Parameter.empty and p.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD:
-            source_signature[p.name] = p.default
+            default = p.default
         else:
-            source_signature[p.name] = MISSING
+            default = MISSING
 
-    if len(source_signature) == 0:
+        param = Parameter(name=p.name, default=default)
+
+        if p.annotation is not inspect.Parameter.empty:
+            if get_args(p.annotation)[0].enum is not None:
+                param.enum = get_args(p.annotation)[0].enum
+
+        parameters.append(param)
+
+    if len(parameters) == 0:
         return None
-    return [Parameter(name=n, default=v) for n, v in source_signature.items()]
+    # parameters = [Parameter(name=n, default=v) for n, v in source_signature.items()]
+
+    return parameters
 
 
 FuncIns = ParamSpec("FuncIns")  # For input types of given func to script decorator

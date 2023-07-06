@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: test-types-
+spec:
+  entrypoint: echo
+  templates:
+  - inputs:
+      parameters:
+      - enum:
+        - 1
+        - 2
+        - 3
+        name: an_int
+      - name: another_int
+    name: echo
+    script:
+      command:
+      - python
+      image: python:3.8
+      source: 'import os
+
+        import sys
+
+        sys.path.append(os.getcwd())
+
+        import json
+
+        try: an_int = json.loads(r''''''{{inputs.parameters.an_int}}'''''')
+
+        except: an_int = r''''''{{inputs.parameters.an_int}}''''''
+
+        try: another_int = json.loads(r''''''{{inputs.parameters.another_int}}'''''')
+
+        except: another_int = r''''''{{inputs.parameters.another_int}}''''''
+
+
+        print(an_int)
+
+        print(another_int)'

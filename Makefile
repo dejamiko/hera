@@ -43,6 +43,10 @@ lint:  ## Run a `lint` process on Hera and report problems
 test:  ## Run tests for Hera
 	@poetry run python -m pytest --cov-report=term-missing
 
+.PHONY: test-types
+test-types:  ## Run tests for types for Hera
+	@poetry run python -m pytest tests/test_types.py
+
 .PHONY: workflows-models
 workflows-models: ## Generate the Workflows models portion of Argo Workflows
 	@poetry run datamodel-codegen \
