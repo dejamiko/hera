@@ -1,5 +1,6 @@
 import importlib
 from pathlib import Path
+import pytest
 
 import yaml
 from hera.shared import global_config
@@ -12,9 +13,12 @@ from hera.workflows import (
 )
 
 
-def test_hera_output():
+@pytest.mark.parametrize(
+    "name", ["value_from", "default", "description", "global_name", "enum"]
+)
+def test_hera_output(name):
     # GIVEN
-    module_name = "typed_script_decorator"
+    module_name = "script_annotations_" + name
     global_config.reset()
     global_config.host = "http://hera.testing"
     workflow = importlib.import_module(f"examples.workflows.{module_name}").w
@@ -24,8 +28,8 @@ def test_hera_output():
     output = workflow.to_dict()
 
     # THEN
-    # if _generate_yaml(generated_yaml_path):
-    generated_yaml_path.write_text(yaml.dump(output, sort_keys=False, default_flow_style=False))
+    if _generate_yaml(generated_yaml_path):
+        generated_yaml_path.write_text(yaml.dump(output, sort_keys=False, default_flow_style=False))
 
     # Check there have been no regressions from the generated yaml committed in the repo
     assert generated_yaml_path.exists()

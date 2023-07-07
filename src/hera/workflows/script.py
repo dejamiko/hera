@@ -237,11 +237,9 @@ class Script(
 def _get_parameters_from_callable(source: Callable) -> Optional[List[Parameter]]:
     # If there are any kwargs arguments associated with the function signature,
     # we store these as we can set them as default values for argo arguments
-    
-    # source_signature: Dict[str, Optional[object]] = {}
-
+    # 
+    # Take all the annotation information and make sure it is stored.
     parameters = []
-    # print(get_annotations(source))
     
     for p in inspect.signature(source).parameters.values():
         if p.default != inspect.Parameter.empty and p.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD:
@@ -252,14 +250,22 @@ def _get_parameters_from_callable(source: Callable) -> Optional[List[Parameter]]
         param = Parameter(name=p.name, default=default)
 
         if p.annotation is not inspect.Parameter.empty:
-            if get_args(p.annotation)[0].enum is not None:
-                param.enum = get_args(p.annotation)[0].enum
+            # parse the annotation information to strings? Very questionable but seems to work
+            if get_args(p.annotation)[1].default is not None:
+                param.default = str(get_args(p.annotation)[1].default)
+            if get_args(p.annotation)[1].description is not None:
+                param.description = get_args(p.annotation)[1].description
+            if get_args(p.annotation)[1].enum is not None:
+                param.enum = [str(x) for x in get_args(p.annotation)[1].enum]
+            if get_args(p.annotation)[1].global_name is not None:
+                param.global_name = get_args(p.annotation)[1].global_name
+            if get_args(p.annotation)[1].value_from is not None:
+                param.value_from = get_args(p.annotation)[1].value_from
 
         parameters.append(param)
 
     if len(parameters) == 0:
         return None
-    # parameters = [Parameter(name=n, default=v) for n, v in source_signature.items()]
 
     return parameters
 
