@@ -3,8 +3,16 @@ kind: Workflow
 metadata:
   generateName: test-types-
 spec:
-  entrypoint: echo
+  entrypoint: my_steps
   templates:
+  - name: my_steps
+    steps:
+    - - name: echo-int
+        template: echo-int
+    - - name: echo-boolean
+        template: echo-boolean
+    - - name: echo-string
+        template: echo-string
   - inputs:
       parameters:
       - description: an_int parameter

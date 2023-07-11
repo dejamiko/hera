@@ -257,9 +257,7 @@ def _get_parameters_from_callable(source: Callable) -> Optional[List[Parameter]]
             if get_args(p.annotation)[1].description is not None:
                 param.description = get_args(p.annotation)[1].description
             if get_args(p.annotation)[1].enum is not None:
-                param.enum = [serialize(x) for x in get_args(p.annotation)[1].enum]
-            if get_args(p.annotation)[1].value_from is not None:
-                param.value_from = get_args(p.annotation)[1].value_from
+                param.enum = [str(x) for x in get_args(p.annotation)[1].enum]
 
         parameters.append(param)
 

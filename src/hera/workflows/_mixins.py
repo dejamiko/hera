@@ -978,6 +978,7 @@ class ModelMapperMixin(BaseMixin):
                     raise ValueError(f"Model key '{key}' does not exist in class {curr_class}")
                 curr_class = curr_class.__fields__[key].outer_type_
 
+
         @classmethod
         def _get_model_class(cls) -> Type[BaseModel]:
             raise NotImplementedError
