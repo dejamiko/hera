@@ -21,6 +21,7 @@ from typing import (
     Union,
     overload,
 )
+from hera.shared.serialization import serialize
 
 from pydantic import root_validator, validator
 from typing_extensions import ParamSpec
@@ -252,13 +253,11 @@ def _get_parameters_from_callable(source: Callable) -> Optional[List[Parameter]]
         if p.annotation is not inspect.Parameter.empty:
             # parse the annotation information to strings? Very questionable but seems to work
             if get_args(p.annotation)[1].default is not None:
-                param.default = str(get_args(p.annotation)[1].default)
+                param.default = serialize(get_args(p.annotation)[1].default)
             if get_args(p.annotation)[1].description is not None:
                 param.description = get_args(p.annotation)[1].description
             if get_args(p.annotation)[1].enum is not None:
-                param.enum = [str(x) for x in get_args(p.annotation)[1].enum]
-            if get_args(p.annotation)[1].global_name is not None:
-                param.global_name = get_args(p.annotation)[1].global_name
+                param.enum = [serialize(x) for x in get_args(p.annotation)[1].enum]
             if get_args(p.annotation)[1].value_from is not None:
                 param.value_from = get_args(p.annotation)[1].value_from
 

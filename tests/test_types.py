@@ -14,7 +14,7 @@ from hera.workflows import (
 
 
 @pytest.mark.parametrize(
-    "name", ["value_from", "default", "description", "global_name", "enum"]
+    "name", ["value_from", "default", "description", "enum"]
 )
 def test_hera_output(name):
     # GIVEN

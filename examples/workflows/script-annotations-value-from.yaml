@@ -8,7 +8,10 @@ spec:
   - inputs:
       parameters:
       - name: an_int
-        valueFrom: {}
+        valueFrom:
+          configMapKeyRef:
+            key: an_int_param
+            name: simple-parameters
     name: echo-int
     script:
       command:
@@ -20,18 +23,14 @@ spec:
 
         sys.path.append(os.getcwd())
 
-        import json
-
-        try: an_int = json.loads(r''''''{{inputs.parameters.an_int}}'''''')
-
-        except: an_int = r''''''{{inputs.parameters.an_int}}''''''
-
-
-        print(an_int)'
+        print(''inputs.parameters.an_int'')'
   - inputs:
       parameters:
       - name: a_bool
-        valueFrom: {}
+        valueFrom:
+          configMapKeyRef:
+            key: a_bool_param
+            name: simple-parameters
     name: echo-boolean
     script:
       command:
@@ -54,7 +53,10 @@ spec:
   - inputs:
       parameters:
       - name: a_string
-        valueFrom: {}
+        valueFrom:
+          configMapKeyRef:
+            key: a_string_param
+            name: simple-parameters
     name: echo-string
     script:
       command:
